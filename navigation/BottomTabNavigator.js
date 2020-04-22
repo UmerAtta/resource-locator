@@ -5,6 +5,8 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
+
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Home';
@@ -42,6 +44,16 @@ export default function BottomTabNavigator({ navigation, route }) {
         }}
       />
 
+      <BottomTab.Screen
+        name="Signup"
+        component={SignupScreen}
+        options={{
+          title: 'Signup',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
+      />
+
+
     </BottomTab.Navigator>
   );
 }
@@ -56,5 +68,7 @@ function getHeaderTitle(route) {
       return 'Links to learn more';
     case 'Login':
       return 'Login to your account';
+    case 'Signup':
+      return 'Signup to your account';
   }
 }
