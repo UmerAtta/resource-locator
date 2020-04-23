@@ -6,6 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
+import dashboardScreen from '../screens/DashboardScreen';
 
 
 const BottomTab = createBottomTabNavigator();
@@ -52,6 +53,14 @@ export default function BottomTabNavigator({ navigation, route }) {
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
         }}
       />
+      <BottomTab.Screen //testing dashboard
+        name="dashboardScreen"
+        component={dashboardScreen}
+        options={{
+          title: 'dashboardScreen',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
+      />
 
 
     </BottomTab.Navigator>
@@ -70,5 +79,7 @@ function getHeaderTitle(route) {
       return 'Login to your account';
     case 'Signup':
       return 'Signup to your account';
+    case 'dashboardScreen':
+      return 'hi there';
   }
 }
