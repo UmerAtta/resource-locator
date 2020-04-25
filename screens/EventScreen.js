@@ -1,12 +1,15 @@
 import * as React from "react"
-import { Alert } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 import {
     SegmentedControl,
     WhiteSpace,
     SearchBar,
     Button,
-    View
+    View,
+    List
 } from '@ant-design/react-native';
+
+const Item = List.Item
 
 const segments = {
     PUBLIC_EVENTS: 'Public Events',
@@ -40,7 +43,7 @@ export default class EventScreen extends React.Component {
 
         return (
             <>
-                <View style={{ paddingTop: 10, paddingHorizontal: 10 }}>
+                <View style={{ flex: 1, paddingTop: 10, paddingHorizontal: 10 }}>
                     <SearchBar
                         value={searchText}
                         placeholder="Search events"
@@ -64,6 +67,21 @@ export default class EventScreen extends React.Component {
                         eventType === segments.MY_EVENTS && <Button type="primary" style={{ height: 40 }} onPress={this.addEvent}>Add Event</Button>
                     }
                     {/* end - my events page */}
+                    {/* start - events list */}
+                    <WhiteSpace size="lg" />
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        automaticallyAdjustContentInsets={false}
+                        showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
+                    >
+                        <List className="my-list" renderHeader={'Filtered events'}>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                        </List>
+                    </ScrollView>
+
+                    {/* end - events list */}
+
                 </View>
             </>
         )
