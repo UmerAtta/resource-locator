@@ -117,8 +117,10 @@ export default class EventScreen extends React.Component {
                             <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
                         </List>
                     </ScrollView>
-
                     {/* end - events list */}
+                    {/* start - event details modal */}
+
+                    {/* end - event details modal */}
 
                 </View>
             </>
