@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Alert, ScrollView } from 'react-native';
+import { Alert, ScrollView, Dimensions } from 'react-native';
 import {
     SegmentedControl,
     WhiteSpace,
@@ -61,21 +61,59 @@ export default class EventScreen extends React.Component {
                         onValueChange={(value) => this.onChange(value, 'eventType')}
                         style={{ height: 40 }}
                     />
-                    <WhiteSpace size="lg" />
                     {/* start - my events page */}
                     {
-                        eventType === segments.MY_EVENTS && <Button type="primary" style={{ height: 40 }} onPress={this.addEvent}>Add Event</Button>
+                        eventType === segments.MY_EVENTS && [
+                            <WhiteSpace size="lg" />, <Button type="primary" style={{ height: 40 }} onPress={this.addEvent}>Add Event</Button>
+                        ]
                     }
                     {/* end - my events page */}
                     {/* start - events list */}
                     <WhiteSpace size="lg" />
                     <ScrollView
-                        style={{ flex: 1 }}
+                        style={{
+                            flex: 1,
+                            maxHeight: Math.round(Dimensions.get('window').height -
+                                (eventType === segments.MY_EVENTS ? 320 : 265))
+                        }}
                         automaticallyAdjustContentInsets={false}
                         showsHorizontalScrollIndicator={false}
                         showsVerticalScrollIndicator={false}
                     >
                         <List className="my-list" renderHeader={'Filtered events'}>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
+                            <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
                             <Item extra="extra content" align="top" thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" wrap>Title</Item>
                         </List>
                     </ScrollView>
