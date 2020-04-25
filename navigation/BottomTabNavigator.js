@@ -6,7 +6,9 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
-import dashboardScreen from '../screens/DashboardScreen';
+import DashboardScreen from '../screens/DashboardScreen';
+import EventScreen from '../screens/EventScreen';
+import ResourceScreen from '../screens/ResourceScreen';
 
 
 const BottomTab = createBottomTabNavigator();
@@ -55,10 +57,26 @@ export default function BottomTabNavigator({ navigation, route }) {
       />
       <BottomTab.Screen //testing dashboard
         name="dashboardScreen"
-        component={dashboardScreen}
+        component={DashboardScreen}
         options={{
-          title: 'dashboardScreen',
+          title: 'Dashboard',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
+      />
+      <BottomTab.Screen //testing dashboard
+        name="eventScreen"
+        component={EventScreen}
+        options={{
+          title: 'Events',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+        }}
+      />
+      <BottomTab.Screen //testing dashboard
+        name="resourceScreen"
+        component={ResourceScreen}
+        options={{
+          title: 'Resources',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-person" />,
         }}
       />
 
@@ -80,6 +98,10 @@ function getHeaderTitle(route) {
     case 'Signup':
       return 'Signup to your account';
     case 'dashboardScreen':
-      return 'hi there';
+      return 'Welcome!';
+    case 'eventScreen':
+      return 'Events';
+    case 'resourceScreen':
+      return 'Resources';
   }
 }
