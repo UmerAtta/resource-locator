@@ -25,7 +25,17 @@ export default function App(props) {
 
         // Load our initial navigation state
         setInitialNavigationState(await getInitialState());
+        await Font.loadAsync(
+          'antoutline',
+          // eslint-disable-next-line
+          require('@ant-design/icons-react-native/fonts/antoutline.ttf')
+        );
 
+        await Font.loadAsync(
+          'antfill',
+          // eslint-disable-next-line
+          require('@ant-design/icons-react-native/fonts/antfill.ttf')
+        );
         // Load fonts
         await Font.loadAsync({
           ...Ionicons.font,
