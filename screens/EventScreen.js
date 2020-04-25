@@ -36,11 +36,13 @@ export default class EventScreen extends React.Component {
     }
 
     render() {
+        const { searchText, eventType } = this.state
+
         return (
             <>
                 <View style={{ paddingTop: 10, paddingHorizontal: 10 }}>
                     <SearchBar
-                        value={this.state.searchText}
+                        value={searchText}
                         placeholder="Search events"
                         onSubmit={value => Alert.alert(value)}
                         onCancel={this.clear}
@@ -57,9 +59,11 @@ export default class EventScreen extends React.Component {
                         style={{ height: 40 }}
                     />
                     <WhiteSpace size="lg" />
+                    {/* start - my events page */}
                     {
-                        this.state.eventType === segments.MY_EVENTS && <Button type="primary" style={{ height: 40 }} onPress={this.addEvent}>Add Event</Button>
+                        eventType === segments.MY_EVENTS && <Button type="primary" style={{ height: 40 }} onPress={this.addEvent}>Add Event</Button>
                     }
+                    {/* end - my events page */}
                 </View>
             </>
         )
