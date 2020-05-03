@@ -12,6 +12,8 @@ import {
 } from "@ant-design/react-native";
 import { TextInput } from "react-native-gesture-handler";
 
+import { db } from "../Fire";
+
 const Item = List.Item;
 
 const segments = {
@@ -27,6 +29,7 @@ export default class EventScreen extends React.Component {
     evtCat: "",
     orgInfo: "",
     isEvtFormShow: false,
+    loading: false,
   };
 
   clear = () => {
@@ -49,7 +52,26 @@ export default class EventScreen extends React.Component {
   };
 
   onSubmit = () => {
-    Alert.alert("Event Information", JSON.stringify(this.state));
+    try {
+      this.setState({ ...this.state, loading: true });
+      const event = {
+        name: this.state.eventName,
+        category: this.state.evtCat,
+        organiser: this.state.orgInfo,
+      };
+      db.collection("events")
+        .add(event)
+        .then((data) => {
+          Alert.alert("Event added successfully");
+          this.setState({ ...this.state, loading: false });
+          this.onClose(undefined);
+        })
+        .catch((err) => {
+          Alert.alert("Error: ", JSON.stringify(this.state));
+        });
+    } catch (error) {
+      Alert.alert("Error Catched: ", JSON.stringify(this.state));
+    }
   };
 
   onClose = (cls) => {
@@ -57,7 +79,7 @@ export default class EventScreen extends React.Component {
   };
 
   render() {
-    const { searchText, eventType, isEvtFormShow } = this.state;
+    const { searchText, eventType, isEvtFormShow, loading } = this.state;
 
     // const footerButtons = [
     //     { text: 'Cancel', onPress: () => this.onChange([value], cancel) },
@@ -168,7 +190,7 @@ export default class EventScreen extends React.Component {
                   value={this.state.evtCat}
                 />
                 <TextInput
-                  secureTextEntry={true}
+                  // secureTextEntry={true}
                   style={{ height: 40 }}
                   placeholder="Organiser info"
                   onChangeText={(orgInfo) => this.setState({ orgInfo })}
@@ -176,8 +198,8 @@ export default class EventScreen extends React.Component {
                 />
                 {/* <Text style={{ textAlign: 'center' }}>Content...</Text> */}
               </View>
-              <Button type="primary" onPress={this.onSubmit}>
-                Submitt
+              <Button type="primary" onPress={this.onSubmit} disabled={loading}>
+                Submit
               </Button>
               <WhiteSpace />
               <Button type="primary" onPress={this.onClose}>

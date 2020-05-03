@@ -9,6 +9,7 @@ import {
   Provider,
 } from "@ant-design/react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { db } from "../Fire";
 const segments = {
   PUBLIC_RESOURCES: "Resources",
   MY_SERVICES: "My services",
@@ -39,7 +40,14 @@ export default class ResourceScreen extends React.Component {
     this.setState({ isResFormShow: false });
   };
   onSubmit = () => {
-    Alert.alert("Your information", JSON.stringify(this.state));
+    db.collection("resources")
+      .add(this.state)
+      .then((data) => {
+        Alert.alert("Your information", JSON.stringify(this.state));
+      })
+      .catch((err) => {
+        Alert.alert("Error: ", JSON.stringify(this.state));
+      });
   };
   render() {
     const { resourceType, isResFormShow } = this.state;
