@@ -87,7 +87,7 @@ export default class EventScreen extends React.Component {
         snapshot.forEach((event) => {
           events.push({ ...event.data(), id: event.id });
         });
-        this.setState({ events });
+        this.setState({ events: events.reverse() });
       });
   }
 
