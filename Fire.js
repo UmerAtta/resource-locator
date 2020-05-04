@@ -19,3 +19,4 @@ const app = firebase.apps.length
 window.addEventListener = (e) => e;
 
 export const db = app.firestore();
+export default firebase;

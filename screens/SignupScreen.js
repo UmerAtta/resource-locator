@@ -2,28 +2,41 @@ import * as React from "react";
 import { StyleSheet, TextInput, View, Alert, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
+import firebase, { db } from "../Fire";
+
 export default class SignupScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      name: "",
       email: "",
       password: "",
       phoneNumber: "",
-      errorMessage: null,
     };
   }
 
-  //   Signup = () => {
-  //     Alert.alert("Signup Credentials", JSON.stringify(this.state));
-  //     db.collection("signup").add(this.state);
-  //   };
+  signup = () => {
+    console.log(this.state);
 
-  handleSignUp = () => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => this.props.navigation.navigate("Dashboard"))
-      .catch((error) => this.setState({ errorMessage: error.message }));
+      .then(() => {
+        const user = {
+          name: this.state.name,
+          email: this.state.email,
+          phoneNumber: this.state.phoneNumber,
+        };
+        db.collection("users")
+          .add(user)
+          .then((user) => {
+            Alert.alert("Signup", "Your account has been created.");
+          });
+        this.props.navigation.navigate("Dashboard");
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message);
+      });
   };
 
   render() {
@@ -36,13 +49,14 @@ export default class SignupScreen extends React.Component {
           <TextInput
             style={{ height: 40 }}
             placeholder="someone@example.com"
-            onChangeText={(email) => this.setState({ email })}
+            onChangeText={(email) => this.setState({ email: email.trim() })}
             value={this.state.email}
           />
           <TextInput
             secureTextEntry={true}
             style={{ height: 40 }}
             placeholder="Password"
+            autoCapitalize={false}
             onChangeText={(password) => this.setState({ password })}
             value={this.state.password}
           />
@@ -53,7 +67,7 @@ export default class SignupScreen extends React.Component {
             onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
             value={this.state.phoneNumber}
           />
-          <Button title="Signup" color="#fed03d" onPress={this.handleSignUp} />
+          <Button title="Signup" color="#fed03d" onPress={this.signup} />
         </View>
       </ScrollView>
     );

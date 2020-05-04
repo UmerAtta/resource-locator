@@ -20,9 +20,10 @@ export default class ResourceScreen extends React.Component {
     value: "",
     resourceType: segments.PUBLIC_RESOURCES,
     Category: "",
-    name: "",
+    Name: "",
     Experience: "",
     isResFormShow: false,
+    loading: false,
   };
 
   addService = () => {
@@ -40,17 +41,28 @@ export default class ResourceScreen extends React.Component {
     this.setState({ isResFormShow: false });
   };
   onSubmit = () => {
-    db.collection("resources")
-      .add(this.state)
-      .then((data) => {
-        Alert.alert("Your information", JSON.stringify(this.state));
-      })
-      .catch((err) => {
-        Alert.alert("Error: ", JSON.stringify(this.state));
-      });
+    try {
+      this.setState({ ...this.state, loading: true });
+      const resources = {
+        category: this.state.Category,
+        name: this.state.Name,
+        experience: this.state.Experience,
+      };
+      db.collection("resources")
+        .add(this.state)
+        .then((data) => {
+          Alert.alert("Your information", JSON.stringify(this.state));
+          this.setState({ ...this.state, loading: true });
+        })
+        .catch((err) => {
+          Alert.alert("Error: ", JSON.stringify(this.state));
+        });
+    } catch (error) {
+      Alert.alert("Error Catched:", JSON.stringify(this.state));
+    }
   };
   render() {
-    const { resourceType, isResFormShow } = this.state;
+    const { resourceType, isResFormShow, loading } = this.state;
 
     return (
       <>
@@ -93,7 +105,7 @@ export default class ResourceScreen extends React.Component {
                 <TextInput
                   // secureTextEntry={true}
                   style={{ height: 40 }}
-                  placeholder="ser"
+                  placeholder="category"
                   onChangeText={(Category) => this.setState({ Category })}
                   value={this.state.Category}
                 />
@@ -101,19 +113,19 @@ export default class ResourceScreen extends React.Component {
                 <TextInput
                   // secureTextEntry={true}
                   style={{ height: 40 }}
-                  placeholder="ser"
-                  onChangeText={(name) => this.setState({ name })}
+                  placeholder="name"
+                  onChangeText={(Name) => this.setState({ Name })}
                   value={this.state.name}
                 />
                 <TextInput
                   // secureTextEntry={true}
                   style={{ height: 40 }}
-                  placeholder="ser"
+                  placeholder="experience"
                   onChangeText={(Experience) => this.setState({ Experience })}
                   value={this.state.Experience}
                 />
               </View>
-              <Button type="primary" onPress={this.onSubmit}>
+              <Button type="primary" onPress={this.onSubmit} disabled={loading}>
                 Submitt
               </Button>
               <WhiteSpace />

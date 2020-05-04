@@ -15,6 +15,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { db } from "../Fire";
 
 const Item = List.Item;
+const Brief = Item.Brief;
 
 const segments = {
   PUBLIC_EVENTS: "Public Events",
@@ -30,6 +31,7 @@ export default class EventScreen extends React.Component {
     orgInfo: "",
     isEvtFormShow: false,
     loading: false,
+    events: [],
   };
 
   clear = () => {
@@ -77,9 +79,41 @@ export default class EventScreen extends React.Component {
   onClose = (cls) => {
     this.setState({ isEvtFormShow: false });
   };
+  componentDidMount() {
+    db.collection("events")
+      .get()
+      .then((snapshot) => {
+        const events = [];
+        snapshot.forEach((event) => {
+          events.push({ ...event.data(), id: event.id });
+        });
+        this.setState({ events });
+      });
+  }
 
   render() {
-    const { searchText, eventType, isEvtFormShow, loading } = this.state;
+    const {
+      searchText,
+      eventType,
+      isEvtFormShow,
+      loading,
+      events,
+    } = this.state;
+
+    const eventsList = events.map((evt) => {
+      return (
+        <Item
+          key={evt.id}
+          extra={evt.organiser || "--"}
+          align="top"
+          thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
+          wrap
+        >
+          {evt.name || "--"}
+          <Brief>{evt.category || "--"}</Brief>
+        </Item>
+      );
+    });
 
     // const footerButtons = [
     //     { text: 'Cancel', onPress: () => this.onChange([value], cancel) },
@@ -134,30 +168,7 @@ export default class EventScreen extends React.Component {
               showsVerticalScrollIndicator={false}
             >
               <List className="my-list" renderHeader={"Filtered events"}>
-                <Item
-                  extra="extra content"
-                  align="top"
-                  thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
-                  wrap
-                >
-                  Title
-                </Item>
-                <Item
-                  extra="extra content"
-                  align="top"
-                  thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
-                  wrap
-                >
-                  Title
-                </Item>
-                <Item
-                  extra="extra content"
-                  align="top"
-                  thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
-                  wrap
-                >
-                  Title
-                </Item>
+                {eventsList}
               </List>
             </ScrollView>
             {/* end - events list */}

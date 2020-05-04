@@ -1,17 +1,41 @@
 import * as React from "react";
 import { StyleSheet, TextInput, View, Alert, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { db } from "../Fire";
+import firebase, { db } from "../Fire";
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { email: "", password: "" };
+    this.state = {
+      email: "",
+      password: "",
+    };
+
+    // state = { email: '', password: '', errorMessage: null }
   }
 
   login = () => {
-    Alert.alert("Login Credentials: ", JSON.stringify(this.state));
-    // db.collection("login").add((this.state));
+    console.log(this.state);
+    const { email, password } = this.state;
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        const user = {
+          email: this.state.email,
+          password: this.state.password,
+        };
+        db.collection("users")
+          .add(user)
+          .then(() => {
+            this.props.navigation.navigate("Dashboard");
+          })
+          .catch((error) => {
+            Alert.alert("Error", error.message);
+          });
+        // Alert.alert("Login Credentials: ", JSON.stringify(this.state));
+        // db.collection("login").add((this.state));
+      });
   };
 
   render() {
@@ -24,7 +48,7 @@ export default class LoginScreen extends React.Component {
           <TextInput
             style={{ height: 40 }}
             placeholder="someone@example.com"
-            onChangeText={(email) => this.setState({ email })}
+            onChangeText={(email) => this.setState({ email: email.trim() })}
             value={this.state.email}
           />
           <TextInput
