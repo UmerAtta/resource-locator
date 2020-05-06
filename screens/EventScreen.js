@@ -12,7 +12,7 @@ import {
 } from "@ant-design/react-native";
 import { TextInput } from "react-native-gesture-handler";
 
-import { db } from "../Fire";
+import { db, user } from "../Fire";
 
 const Item = List.Item;
 const Brief = Item.Brief;
@@ -89,6 +89,8 @@ export default class EventScreen extends React.Component {
         });
         this.setState({ events: events.reverse() });
       });
+    console.log("currentUser");
+    console.log(user);
   }
 
   render() {
@@ -100,20 +102,22 @@ export default class EventScreen extends React.Component {
       events,
     } = this.state;
 
-    const eventsList = events.map((evt) => {
-      return (
-        <Item
-          key={evt.id}
-          extra={evt.organiser || "--"}
-          align="top"
-          thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
-          wrap
-        >
-          {evt.name || "--"}
-          <Brief>{evt.category || "--"}</Brief>
-        </Item>
-      );
-    });
+    const eventsList = events
+      .filter((event) => event.name?.includes(this.state.searchText || ""))
+      .map((evt) => {
+        return (
+          <Item
+            key={evt.id}
+            extra={evt.organiser || "--"}
+            align="top"
+            thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
+            wrap
+          >
+            {evt.name || "--"}
+            <Brief>{evt.category || "--"}</Brief>
+          </Item>
+        );
+      });
 
     // const footerButtons = [
     //     { text: 'Cancel', onPress: () => this.onChange([value], cancel) },

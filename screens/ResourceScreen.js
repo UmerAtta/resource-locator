@@ -1,5 +1,6 @@
 import * as React from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, Text, Picker } from "react-native";
+
 import {
   SearchBar,
   SegmentedControl,
@@ -7,6 +8,8 @@ import {
   WhiteSpace,
   Modal,
   Provider,
+  List,
+  TextareaItem,
 } from "@ant-design/react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { db } from "../Fire";
@@ -22,9 +25,14 @@ export default class ResourceScreen extends React.Component {
     Category: "",
     Name: "",
     Experience: "",
+    location: " ",
     isResFormShow: false,
     loading: false,
+    PickerValue: "",
   };
+  // const = () => {
+  //   [selectedValue, setSelectedValue] = useState("select the category");
+  // };
 
   addService = () => {
     this.setState({ isResFormShow: true });
@@ -33,7 +41,9 @@ export default class ResourceScreen extends React.Component {
     if (stateVal === undefined) return;
 
     this.setState({ [stateVal]: value });
+    console.log(value);
   };
+
   clear = () => {
     this.setState({ searchText: "" });
   };
@@ -51,8 +61,9 @@ export default class ResourceScreen extends React.Component {
       db.collection("resources")
         .add(this.state)
         .then((data) => {
-          Alert.alert("Your information", JSON.stringify(this.state));
-          this.setState({ ...this.state, loading: true });
+          Alert.alert("Resource sucessfully added");
+          this.setState({ ...this.state, loading: false });
+          this.onClose(undefined);
         })
         .catch((err) => {
           Alert.alert("Error: ", JSON.stringify(this.state));
@@ -61,8 +72,23 @@ export default class ResourceScreen extends React.Component {
       Alert.alert("Error Catched:", JSON.stringify(this.state));
     }
   };
+  updateUser = (user) => {
+    this.setState({ user: user });
+  };
+  // const = (value) => {
+  //   value: "";
+  // };
+
   render() {
-    const { resourceType, isResFormShow, loading } = this.state;
+    const {
+      resourceType,
+      isResFormShow,
+      loading,
+      PickerValue,
+      setSelectedValue,
+      selectedValue,
+    } = this.state;
+    // const { getFieldProps } = this.props.form;
 
     return (
       <>
@@ -90,6 +116,25 @@ export default class ResourceScreen extends React.Component {
               </Button>,
             ]}
             {/* ending segment */}
+            {/* start - events list */}
+            {/* <WhiteSpace size="lg" />
+            <ScrollView
+              style={{
+                flex: 1,
+                maxHeight: Math.round(
+                  Dimensions.get("window").height -
+                    (eventType === segments.MY_EVENTS ? 320 : 265)
+                ),
+              }}
+              automaticallyAdjustContentInsets={false}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+            >
+              <List className="my-list" renderHeader={"Filtered events"}>
+                {eventsList}
+              </List>
+            </ScrollView> */}
+            {/* end of scroll */}
             {/* starting Modal */}
             <Modal
               title="Title"
@@ -103,18 +148,49 @@ export default class ResourceScreen extends React.Component {
             >
               <View style={{ paddingVertical: 20 }}>
                 <TextInput
-                  // secureTextEntry={true}
-                  style={{ height: 40 }}
-                  placeholder="category"
-                  onChangeText={(Category) => this.setState({ Category })}
-                  value={this.state.Category}
+                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                  placeholder="Location"
+                  onChangeText={(location) => this.setState({ location })}
+                  value={(value) => (this.state, value)}
                 />
+                <Picker
+                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                  selectedValue={PickerValue}
+                  style={{ height: 50, width: 150 }}
+                  onValueChange={(itemValue, itemIndex) =>
+                    this.setState({ PickerValue: itemValue })
+                  }
+                >
+                  <Picker.Item label="select" value="" />
+                  <Picker.Item label="Beginner" value="Beginner" />
+                  <Picker.Item label="Intermediate" value="Intermediate" />
+                  <Picker.Item label="Proffessional" value="Proffessional" />
+                </Picker>
+                {/* <List renderHeader={() => "Count"}>
+                  <TextareaItem
+                    {...getFieldProps("discrption", {
+                      initialValue: "",
+                    })}
+                    rows={5}
+                    count={100}
+                  />
+                </List> */}
 
-                <TextInput
+                {/* <Picker
+                  setSelectedValue={this.state.user}
+                  onValueChange={this.updateUser}
+                >
+                  <Picker.Item label="Steve" value="steve" />
+                  <Picker.Item label="Ellen" value="ellen" />
+                  <Picker.Item label="Maria" value="maria" />
+                </Picker>
+                <Text>{this.state.user}</Text> */}
+
+                {/* <TextInput
                   // secureTextEntry={true}
                   style={{ height: 40 }}
-                  placeholder="name"
-                  onChangeText={(Name) => this.setState({ Name })}
+                  placeholder="title"
+                  onChangeText={(Title) => this.setState({ Title })}
                   value={this.state.name}
                 />
                 <TextInput
@@ -123,7 +199,16 @@ export default class ResourceScreen extends React.Component {
                   placeholder="experience"
                   onChangeText={(Experience) => this.setState({ Experience })}
                   value={this.state.Experience}
-                />
+                /> */}
+                {/* <List renderHeader={() => "Count"}>
+                  <TextareaItem
+                    {...getFieldProps("count", {
+                      initialValue: "计数功能,我的意见是...",
+                    })}
+                    rows={5}
+                    count={100}
+                  />
+                </List> */}
               </View>
               <Button type="primary" onPress={this.onSubmit} disabled={loading}>
                 Submitt

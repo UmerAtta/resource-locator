@@ -19,4 +19,5 @@ const app = firebase.apps.length
 window.addEventListener = (e) => e;
 
 export const db = app.firestore();
+export const user = firebase.auth().currentUser;
 export default firebase;

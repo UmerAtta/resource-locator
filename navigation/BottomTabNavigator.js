@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as React from "react";
+import firebase from "../Fire";
 
 import TabBarIcon from "../components/TabBarIcon";
 import {
@@ -41,9 +42,15 @@ export default function BottomTabNavigator({ navigation, route }) {
   // https://reactnavigation.org/docs/en/screen-options-resolution.html
   navigation.setOptions({ headerTitle: getHeaderTitle(route) });
 
+  let currentUser;
+  firebase.auth().onAuthStateChanged((user) => {
+    console.log(user);
+    currentUser = user;
+  });
+
   return (
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name={navItems.HOME}
         component={HomeScreen}
         options={{
@@ -60,53 +67,58 @@ export default function BottomTabNavigator({ navigation, route }) {
             <TabBarIcon focused={focused} name="md-book" />
           ),
         }}
-      />
-      <BottomTab.Screen
-        name={navItems.LOGIN}
-        component={LoginScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
-          ),
-        }}
-      />
+      /> */}
+      {!currentUser
+        ? [
+            <BottomTab.Screen //testing dashboard
+              name={navItems.DASHBOARDSCREEN}
+              component={DashboardScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-book" />
+                ),
+              }}
+            />,
+            <BottomTab.Screen //testing dashboard
+              name={navItems.EVENTSCREEN}
+              component={EventScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-book" />
+                ),
+              }}
+            />,
+            <BottomTab.Screen //testing dashboard
+              name={navItems.RESOURCESCREEN}
+              component={ResourceScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-person" />
+                ),
+              }}
+            />,
+          ]
+        : [
+            <BottomTab.Screen
+              name={navItems.LOGIN}
+              component={LoginScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-book" />
+                ),
+              }}
+            />,
 
-      <BottomTab.Screen
-        name={navItems.SIGNUP}
-        component={SignupScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
-          ),
-        }}
-      />
-      <BottomTab.Screen //testing dashboard
-        name={navItems.DASHBOARDSCREEN}
-        component={DashboardScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
-          ),
-        }}
-      />
-      <BottomTab.Screen //testing dashboard
-        name={navItems.EVENTSCREEN}
-        component={EventScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
-          ),
-        }}
-      />
-      <BottomTab.Screen //testing dashboard
-        name={navItems.RESOURCESCREEN}
-        component={ResourceScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-person" />
-          ),
-        }}
-      />
+            <BottomTab.Screen
+              name={navItems.SIGNUP}
+              component={SignupScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-book" />
+                ),
+              }}
+            />,
+          ]}
     </BottomTab.Navigator>
   );
 }

@@ -21,20 +21,23 @@ export default class LoginScreen extends React.Component {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        const user = {
-          email: this.state.email,
-          password: this.state.password,
-        };
-        db.collection("users")
-          .add(user)
-          .then(() => {
-            this.props.navigation.navigate("Dashboard");
-          })
-          .catch((error) => {
-            Alert.alert("Error", error.message);
-          });
+        // const user = {
+        //   email: this.state.email,
+        //   password: this.state.password,
+        // };
+        // db.collection("users")
+        //   .add(user)
+        //   .then(() => {
+        // this.props.navigation.navigate({ name: "Signup" });
+        //   })
+        //   .catch((error) => {
+        //     Alert.alert("Error", error.message);
+        //   });
         // Alert.alert("Login Credentials: ", JSON.stringify(this.state));
         // db.collection("login").add((this.state));
+      })
+      .catch((err) => {
+        Alert.alert("Error", "Invalid credentials");
       });
   };
 
