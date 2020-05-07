@@ -10,9 +10,12 @@ import {
   List,
   Provider,
 } from "@ant-design/react-native";
+
 import { TextInput } from "react-native-gesture-handler";
 
-import { db, user } from "../Fire";
+import firebase, { db, user } from "../Fire";
+
+// const user = firebase.auth().currentUser;
 
 const Item = List.Item;
 const Brief = Item.Brief;
@@ -38,6 +41,16 @@ export default class EventScreen extends React.Component {
     this.setState({
       searchText: "",
     });
+    console.log(user);
+  };
+
+  clearForm = () => {
+    this.setState({
+      eventName: "",
+      evtCat: "",
+      orgInfo: "",
+      loading: false,
+    });
   };
 
   onChange = (value, stateVar) => {
@@ -60,7 +73,10 @@ export default class EventScreen extends React.Component {
         name: this.state.eventName,
         category: this.state.evtCat,
         organiser: this.state.orgInfo,
+        userId: user?.uid,
       };
+      console.log(event);
+
       db.collection("events")
         .add(event)
         .then((data) => {
@@ -70,9 +86,11 @@ export default class EventScreen extends React.Component {
         })
         .catch((err) => {
           Alert.alert("Error: ", JSON.stringify(this.state));
+          this.clearForm();
         });
     } catch (error) {
-      Alert.alert("Error Catched: ", JSON.stringify(this.state));
+      Alert.alert("Error Catched: ", JSON.stringify(error, undefined, 2));
+      this.clearForm();
     }
   };
 
@@ -103,6 +121,13 @@ export default class EventScreen extends React.Component {
     } = this.state;
 
     const eventsList = events
+      .filter((event) => {
+        if (this.state.eventType === segments.MY_EVENTS) {
+          if (event?.userId === user?.uid) {
+            return true;
+          } else return false;
+        } else return true;
+      })
       .filter((event) => event.name?.includes(this.state.searchText || ""))
       .map((evt) => {
         return (

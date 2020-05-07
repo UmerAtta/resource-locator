@@ -43,10 +43,10 @@ export default function BottomTabNavigator({ navigation, route }) {
   navigation.setOptions({ headerTitle: getHeaderTitle(route) });
 
   let currentUser;
-  firebase.auth().onAuthStateChanged((user) => {
-    console.log(user);
-    currentUser = user;
-  });
+  // firebase.auth().onAuthStateChanged((user) => {
+  //   console.log(user);
+  //   currentUser = user;
+  // });
 
   return (
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
@@ -94,6 +94,25 @@ export default function BottomTabNavigator({ navigation, route }) {
               options={{
                 tabBarIcon: ({ focused }) => (
                   <TabBarIcon focused={focused} name="md-person" />
+                ),
+              }}
+            />,
+            <BottomTab.Screen
+              name={navItems.LOGIN}
+              component={LoginScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-book" />
+                ),
+              }}
+            />,
+
+            <BottomTab.Screen
+              name={navItems.SIGNUP}
+              component={SignupScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <TabBarIcon focused={focused} name="md-book" />
                 ),
               }}
             />,

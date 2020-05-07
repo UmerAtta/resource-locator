@@ -28,7 +28,7 @@ export default class LoginScreen extends React.Component {
         // db.collection("users")
         //   .add(user)
         //   .then(() => {
-        // this.props.navigation.navigate({ name: "Signup" });
+        this.props.navigation.navigate({ name: "Events" });
         //   })
         //   .catch((error) => {
         //     Alert.alert("Error", error.message);

@@ -1,6 +1,5 @@
 import * as React from "react";
-import { View, Alert, Text, Picker } from "react-native";
-
+import { View, Alert, StyleSheet, Dimensions } from "react-native";
 import {
   SearchBar,
   SegmentedControl,
@@ -9,10 +8,13 @@ import {
   Modal,
   Provider,
   List,
-  TextareaItem,
 } from "@ant-design/react-native";
-import { TextInput } from "react-native-gesture-handler";
-import { db } from "../Fire";
+import { TextInput, ScrollView } from "react-native-gesture-handler";
+import { db, user } from "../Fire";
+import Colors from "../constants/Colors";
+const Item = List.Item;
+const Brief = Item.Brief;
+
 const segments = {
   PUBLIC_RESOURCES: "Resources",
   MY_SERVICES: "My services",
@@ -26,9 +28,10 @@ export default class ResourceScreen extends React.Component {
     Name: "",
     Experience: "",
     location: " ",
+    availablity: "",
     isResFormShow: false,
     loading: false,
-    PickerValue: "",
+    // PickerValue: "",
   };
   // const = () => {
   //   [selectedValue, setSelectedValue] = useState("select the category");
@@ -47,25 +50,20 @@ export default class ResourceScreen extends React.Component {
   clear = () => {
     this.setState({ searchText: "" });
   };
-  onClose = (cls) => {
+  onClose = () => {
     this.setState({ isResFormShow: false });
   };
   onSubmit = () => {
     try {
       this.setState({ ...this.state, loading: true });
-      const resources = {
-        category: this.state.Category,
-        name: this.state.Name,
-        experience: this.state.Experience,
-      };
       db.collection("resources")
         .add(this.state)
-        .then((data) => {
+        .then(() => {
           Alert.alert("Resource sucessfully added");
           this.setState({ ...this.state, loading: false });
           this.onClose(undefined);
         })
-        .catch((err) => {
+        .catch(() => {
           Alert.alert("Error: ", JSON.stringify(this.state));
         });
     } catch (error) {
@@ -75,21 +73,59 @@ export default class ResourceScreen extends React.Component {
   updateUser = (user) => {
     this.setState({ user: user });
   };
-  // const = (value) => {
-  //   value: "";
-  // };
+  componentDidMount() {
+    db.collection("resources")
+      .get()
+      .then((snapshot) => {
+        const resources = [];
+        snapshot.forEach((event) => {
+          resources.push({ ...event.data(), id: event.id });
+        });
+        this.setState({ resources: resources.reverse() });
+      });
+    console.log("currentUser");
+    console.log(user);
+  }
 
   render() {
     const {
       resourceType,
       isResFormShow,
       loading,
-      PickerValue,
-      setSelectedValue,
-      selectedValue,
+      resources,
+      Dropdown,
     } = this.state;
-    // const { getFieldProps } = this.props.form;
 
+    const resourcesList = resources
+      ?.filter((resource) =>
+        resource.name?.includes(this.state.searchText || "")
+      )
+      .map((res) => {
+        return (
+          <Item
+            key={res.id}
+            extra={res.category || "--"}
+            align="top"
+            thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
+            wrap
+          >
+            {res.name || "--"}
+            <Brief>{res.category || "--"}</Brief>
+          </Item>
+        );
+      });
+    // dropdown
+    let data = [
+      {
+        value: "Banana",
+      },
+      {
+        value: "Mango",
+      },
+      {
+        value: "Pear",
+      },
+    ];
     return (
       <>
         <Provider>
@@ -116,25 +152,26 @@ export default class ResourceScreen extends React.Component {
               </Button>,
             ]}
             {/* ending segment */}
-            {/* start - events list */}
-            {/* <WhiteSpace size="lg" />
+            {/* start - eresource list */}
+            <WhiteSpace size="lg" />
             <ScrollView
               style={{
                 flex: 1,
                 maxHeight: Math.round(
                   Dimensions.get("window").height -
-                    (eventType === segments.MY_EVENTS ? 320 : 265)
+                    (resourceType === segments.MY_SERVICES ? 320 : 265)
                 ),
               }}
               automaticallyAdjustContentInsets={false}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
             >
-              <List className="my-list" renderHeader={"Filtered events"}>
-                {eventsList}
+              <List className="my-list" renderHeader={"Filtered resources"}>
+                {resourcesList}
               </List>
-            </ScrollView> */}
+            </ScrollView>
             {/* end of scroll */}
+
             {/* starting Modal */}
             <Modal
               title="Title"
@@ -147,69 +184,59 @@ export default class ResourceScreen extends React.Component {
               // footer={footerButtons}
             >
               <View style={{ paddingVertical: 20 }}>
+                <Dropdown label="Favorite Fruit" data={data} />
+
+                {/* <View style={styles.container}>
+                  <Picker
+                    style={{ height: 50, width: 150 }}
+                    selectedValue={Category}
+                    style={{ height: 50, width: 150 }}
+                    onValueChange={(itemValue, itemIndex) =>
+                      this.setState({ Category: itemValue })
+                    }
+                  >
+                    <Picker.Item label="select category" value="" />
+                    <Picker.Item label="photographer" value="photographer" />
+                    <Picker.Item label="Musician" value="Musician" />
+                    <Picker.Item label="Developer" value="Developer" />
+                    <Picker.Item label="Electrition" value="Electrition" />
+                  </Picker>
+                  <WhiteSpace />
+                  <Picker
+                    style={{ height: 50, width: 150 }}
+                    selectedValue={Experience}
+                    style={{ height: 50, width: 150 }}
+                    onValueChange={(itemValue, itemIndex) =>
+                      this.setState({ Experience: itemValue })
+                    }
+                  >
+                    <Picker.Item label="select your experience" value="" />
+                    <Picker.Item label="Beginner" value="Beginner" />
+                    <Picker.Item label="Intermediate" value="Intermediate" />
+                    <Picker.Item label="Proffessional" value="Proffessional" />
+                  </Picker>
+                </View> */}
+                <WhiteSpace />
+
                 <TextInput
-                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                  // style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
                   placeholder="Location"
                   onChangeText={(location) => this.setState({ location })}
                   value={(value) => (this.state, value)}
                 />
-                <Picker
-                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-                  selectedValue={PickerValue}
-                  style={{ height: 50, width: 150 }}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({ PickerValue: itemValue })
-                  }
-                >
-                  <Picker.Item label="select" value="" />
-                  <Picker.Item label="Beginner" value="Beginner" />
-                  <Picker.Item label="Intermediate" value="Intermediate" />
-                  <Picker.Item label="Proffessional" value="Proffessional" />
-                </Picker>
-                {/* <List renderHeader={() => "Count"}>
-                  <TextareaItem
-                    {...getFieldProps("discrption", {
-                      initialValue: "",
-                    })}
-                    rows={5}
-                    count={100}
-                  />
-                </List> */}
-
-                {/* <Picker
-                  setSelectedValue={this.state.user}
-                  onValueChange={this.updateUser}
-                >
-                  <Picker.Item label="Steve" value="steve" />
-                  <Picker.Item label="Ellen" value="ellen" />
-                  <Picker.Item label="Maria" value="maria" />
-                </Picker>
-                <Text>{this.state.user}</Text> */}
-
-                {/* <TextInput
-                  // secureTextEntry={true}
-                  style={{ height: 40 }}
-                  placeholder="title"
-                  onChangeText={(Title) => this.setState({ Title })}
-                  value={this.state.name}
-                />
-                <TextInput
-                  // secureTextEntry={true}
-                  style={{ height: 40 }}
-                  placeholder="experience"
-                  onChangeText={(Experience) => this.setState({ Experience })}
-                  value={this.state.Experience}
-                /> */}
-                {/* <List renderHeader={() => "Count"}>
-                  <TextareaItem
-                    {...getFieldProps("count", {
-                      initialValue: "计数功能,我的意见是...",
-                    })}
-                    rows={5}
-                    count={100}
-                  />
-                </List> */}
               </View>
+              <WhiteSpace />
+              <View style={styles.textAreaContainer}>
+                <TextInput
+                  style={styles.textArea}
+                  underlineColorAndroid="transparent"
+                  placeholder="About..."
+                  placeholderTextColor="grey"
+                  numberOfLines={10}
+                  multiline={true}
+                />
+              </View>
+              <WhiteSpace />
               <Button type="primary" onPress={this.onSubmit} disabled={loading}>
                 Submitt
               </Button>
@@ -224,3 +251,22 @@ export default class ResourceScreen extends React.Component {
     );
   }
 }
+// style
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    // paddingTop: 40,
+    alignItems: "center",
+    backgroundColor: "#F5FCFF",
+  },
+  textAreaContainer: {
+    borderColor: Colors.grey20,
+    borderWidth: 1,
+    padding: 5,
+  },
+  textArea: {
+    height: 50,
+    justifyContent: "flex-start",
+  },
+});
