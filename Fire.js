@@ -18,6 +18,24 @@ const app = firebase.apps.length
 
 window.addEventListener = (e) => e;
 
+let observedUser = null;
+let name = "";
+let obs = null;
+firebase.auth().onAuthStateChanged((user) => {
+  observedUser = user;
+  console.log("newuser:", user?.uid);
+  if (user) {
+    obs = db
+      .collection("users")
+      .doc(user?.uid)
+      .onSnapshot((snap) => {
+        name = snap.data();
+        console.log("user is: ", name);
+      });
+  }
+});
+
 export const db = app.firestore();
-export const user = app.auth().currentUser;
+export const user = observedUser;
+export const userFullName = name;
 export default app;

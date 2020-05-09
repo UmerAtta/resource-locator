@@ -17,6 +17,7 @@ export default class LoginScreen extends React.Component {
   login = () => {
     console.log(this.state);
     const { email, password } = this.state;
+    // firebase.auth().signOut();
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -28,7 +29,7 @@ export default class LoginScreen extends React.Component {
         // db.collection("users")
         //   .add(user)
         //   .then(() => {
-        this.props.navigation.navigate({ name: "Events" });
+        // this.props.navigation.navigate({ name: "Events" });
         //   })
         //   .catch((error) => {
         //     Alert.alert("Error", error.message);

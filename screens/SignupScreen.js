@@ -8,7 +8,7 @@ export default class SignupScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
+      userName: "",
       email: "",
       password: "",
       phoneNumber: "",
@@ -23,16 +23,18 @@ export default class SignupScreen extends React.Component {
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
         const user = {
-          name: this.state.name,
+          name: this.state.userName,
           email: this.state.email,
           phoneNumber: this.state.phoneNumber,
         };
         db.collection("users")
           .add(user)
           .then((user) => {
-            Alert.alert("Signup", "Your account has been created.");
+            Alert.alert(
+              "Signup",
+              "Your account has been created sucessfully!."
+            );
           });
-        this.props.navigation.navigate("Dashboard");
       })
       .catch((error) => {
         Alert.alert("Error", error.message);
@@ -48,6 +50,12 @@ export default class SignupScreen extends React.Component {
         <View style={{ padding: 10 }}>
           <TextInput
             style={{ height: 40 }}
+            placeholder="user name"
+            onChangeText={(userName) => this.setState({ userName })}
+            value={this.state.userName}
+          />
+          <TextInput
+            style={{ height: 40 }}
             placeholder="someone@example.com"
             onChangeText={(email) => this.setState({ email: email.trim() })}
             value={this.state.email}
@@ -61,7 +69,7 @@ export default class SignupScreen extends React.Component {
             value={this.state.password}
           />
           <TextInput
-            secureTextEntry={true}
+            // secureTextEntry={true}
             style={{ height: 40 }}
             placeholder="Phone Number"
             onChangeText={(phoneNumber) => this.setState({ phoneNumber })}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Alert, ScrollView, Text, Dimensions } from "react-native";
+import { Alert, ScrollView, Dimensions } from "react-native";
 import {
   SegmentedControl,
   WhiteSpace,
@@ -13,9 +13,9 @@ import {
 
 import { TextInput } from "react-native-gesture-handler";
 
-import firebase, { db, user } from "../Fire";
+import firebase, { db } from "../Fire";
 
-// const user = firebase.auth().currentUser;
+let user = null;
 
 const Item = List.Item;
 const Brief = Item.Brief;
@@ -29,9 +29,9 @@ export default class EventScreen extends React.Component {
   state = {
     searchText: "",
     eventType: segments.PUBLIC_EVENTS,
-    eventName: "",
+    evtName: "",
     evtCat: "",
-    orgInfo: "",
+    evtOrg: "",
     isEvtFormShow: false,
     loading: false,
     events: [],
@@ -46,9 +46,9 @@ export default class EventScreen extends React.Component {
 
   clearForm = () => {
     this.setState({
-      eventName: "",
+      evtName: "",
       evtCat: "",
-      orgInfo: "",
+      evtOrg: "",
       loading: false,
     });
   };
@@ -59,7 +59,7 @@ export default class EventScreen extends React.Component {
     this.setState({ [stateVar]: value });
   };
 
-  addEvent = (evt) => {
+  addEvent = () => {
     // console.log(this.state);
     this.setState({
       isEvtFormShow: true,
@@ -70,34 +70,42 @@ export default class EventScreen extends React.Component {
     try {
       this.setState({ ...this.state, loading: true });
       const event = {
-        name: this.state.eventName,
+        name: this.state.evtName,
         category: this.state.evtCat,
-        organiser: this.state.orgInfo,
+        organiser: this.state.evtOrg,
         userId: user?.uid,
       };
       console.log(event);
 
       db.collection("events")
         .add(event)
-        .then((data) => {
+        .then(() => {
           Alert.alert("Event added successfully");
           this.setState({ ...this.state, loading: false });
           this.onClose(undefined);
+          this.fetchData();
         })
-        .catch((err) => {
+        .catch(() => {
           Alert.alert("Error: ", JSON.stringify(this.state));
           this.clearForm();
         });
     } catch (error) {
-      Alert.alert("Error Catched: ", JSON.stringify(error, undefined, 2));
+      Alert.alert("Error Catched: ", JSON.stringify(error, undefined));
       this.clearForm();
     }
   };
 
-  onClose = (cls) => {
+  onClose = () => {
     this.setState({ isEvtFormShow: false });
   };
   componentDidMount() {
+    this.fetchData();
+    user = firebase.auth().currentUser;
+    console.log("currentUser");
+    console.log(user && "defined");
+  }
+
+  fetchData = () => {
     db.collection("events")
       .get()
       .then((snapshot) => {
@@ -107,9 +115,7 @@ export default class EventScreen extends React.Component {
         });
         this.setState({ events: events.reverse() });
       });
-    console.log("currentUser");
-    console.log(user);
-  }
+  };
 
   render() {
     const {
@@ -123,6 +129,9 @@ export default class EventScreen extends React.Component {
     const eventsList = events
       .filter((event) => {
         if (this.state.eventType === segments.MY_EVENTS) {
+          console.log("hi events: ", event?.userId, user?.uid);
+          if (user?.uid === undefined || event?.userId === undefined)
+            return false;
           if (event?.userId === user?.uid) {
             return true;
           } else return false;
@@ -145,7 +154,8 @@ export default class EventScreen extends React.Component {
       });
 
     // const footerButtons = [
-    //     { text: 'Cancel', onPress: () => this.onChange([value], cancel) },
+    //     { text: 'Cancel
+    //  4onPress: () => this.onChange([value], cancel) }
     //     { text: 'Ok', onPress: () => this.onChange([value], ok) },
     // ];
 
@@ -218,8 +228,8 @@ export default class EventScreen extends React.Component {
                   // secureTextEntry={true}
                   style={{ height: 40 }}
                   placeholder="Event name"
-                  onChangeText={(eventName) => this.setState({ eventName })}
-                  value={this.state.eventName}
+                  onChangeText={(evtName) => this.setState({ evtName })}
+                  value={this.state.evtName}
                 />
 
                 <TextInput
@@ -233,8 +243,8 @@ export default class EventScreen extends React.Component {
                   // secureTextEntry={true}
                   style={{ height: 40 }}
                   placeholder="Organiser info"
-                  onChangeText={(orgInfo) => this.setState({ orgInfo })}
-                  value={this.state.orgInfo}
+                  onChangeText={(evtOrg) => this.setState({ evtOrg })}
+                  value={this.state.evtOrg}
                 />
                 {/* <Text style={{ textAlign: 'center' }}>Content...</Text> */}
               </View>

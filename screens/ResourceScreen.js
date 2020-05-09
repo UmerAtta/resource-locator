@@ -1,36 +1,48 @@
 import * as React from "react";
-import { View, Alert, StyleSheet, Dimensions } from "react-native";
 import {
-  SearchBar,
+  Alert,
+  Picker,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from "react-native";
+import {
   SegmentedControl,
-  Button,
   WhiteSpace,
+  SearchBar,
   Modal,
-  Provider,
+  Button,
+  View,
   List,
+  Provider,
 } from "@ant-design/react-native";
-import { TextInput, ScrollView } from "react-native-gesture-handler";
-import { db, user } from "../Fire";
+import { TextInput } from "react-native-gesture-handler";
+import firebase, { db } from "../Fire";
+// import Item from "@ant-design/react-native/lib/list/ListItem";
 import Colors from "../constants/Colors";
-const Item = List.Item;
-const Brief = Item.Brief;
-
 const segments = {
   PUBLIC_RESOURCES: "Resources",
   MY_SERVICES: "My services",
 };
+const Item = List.Item;
+const Brief = Item.Brief;
+
+let user = null;
 
 export default class ResourceScreen extends React.Component {
   state = {
     value: "",
     resourceType: segments.PUBLIC_RESOURCES,
-    Category: "",
-    Name: "",
-    Experience: "",
-    location: " ",
-    availablity: "",
+    resCat: "",
+    resName: "",
+    resExp: "",
+    resLoc: " ",
+    resAvailable: "",
+    resDes: "",
     isResFormShow: false,
     loading: false,
+    resources: [],
+    searchText: "",
     // PickerValue: "",
   };
   // const = () => {
@@ -56,80 +68,100 @@ export default class ResourceScreen extends React.Component {
   onSubmit = () => {
     try {
       this.setState({ ...this.state, loading: true });
+      const resource = {
+        category: this.state.resCat,
+        name: this.state.resName,
+        experience: this.state.resExp,
+        location: this.state.resLoc,
+        description: this.state.resDes,
+        userId: user?.uid,
+      };
       db.collection("resources")
-        .add(this.state)
+        .add(resource)
         .then(() => {
           Alert.alert("Resource sucessfully added");
           this.setState({ ...this.state, loading: false });
           this.onClose(undefined);
+          this.fetchData();
         })
         .catch(() => {
           Alert.alert("Error: ", JSON.stringify(this.state));
         });
     } catch (error) {
-      Alert.alert("Error Catched:", JSON.stringify(this.state));
+      Alert.alert("Error Catched:", JSON.stringify(error, undefined));
     }
   };
   updateUser = (user) => {
     this.setState({ user: user });
   };
+  // const = (value) => {
+  //   value: "";
+  // };
+
   componentDidMount() {
+    this.fetchData();
+    user = firebase.auth().currentUser;
+    console.log("currentUser");
+    console.log(user && "defined");
+  }
+
+  fetchData = () => {
     db.collection("resources")
       .get()
       .then((snapshot) => {
         const resources = [];
-        snapshot.forEach((event) => {
-          resources.push({ ...event.data(), id: event.id });
+        snapshot.forEach((resource) => {
+          resources.push({ ...resource.data(), id: resource?.id });
         });
         this.setState({ resources: resources.reverse() });
       });
-    console.log("currentUser");
-    console.log(user);
-  }
-
+  };
   render() {
     const {
       resourceType,
       isResFormShow,
       loading,
+      resCat,
+      resExp,
       resources,
-      Dropdown,
     } = this.state;
 
     const resourcesList = resources
-      ?.filter((resource) =>
+      ?.filter((resource) => {
+        if (this.state.resourceType === segments.MY_SERVICES) {
+          console.log(
+            "hi resources: ",
+            resource?.userId,
+            user?.uid,
+            user?.displayName
+          );
+          if (resource?.userId === user?.uid) {
+            return true;
+          } else return false;
+        } else return true;
+      })
+      .filter((resource) =>
         resource.name?.includes(this.state.searchText || "")
       )
       .map((res) => {
         return (
           <Item
-            key={res.id}
-            extra={res.category || "--"}
+            key={res?.id}
+            extra={res?.category || "--"}
             align="top"
             thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png"
             wrap
           >
-            {res.name || "--"}
-            <Brief>{res.category || "--"}</Brief>
+            {res?.name || "--"}
+            <Brief>{res?.category || "--"}</Brief>
           </Item>
         );
       });
-    // dropdown
-    let data = [
-      {
-        value: "Banana",
-      },
-      {
-        value: "Mango",
-      },
-      {
-        value: "Pear",
-      },
-    ];
+
     return (
       <>
         <Provider>
-          <View style={{ padding: 10 }}>
+          <View style={{ flex: 1, paddingTop: 10, paddingHorizontal: 10 }}>
             <SearchBar
               value={this.state.searchText}
               placeholder="type here"
@@ -183,64 +215,83 @@ export default class ResourceScreen extends React.Component {
               closable={true}
               // footer={footerButtons}
             >
-              <View style={{ paddingVertical: 20 }}>
-                <Dropdown label="Favorite Fruit" data={data} />
-
-                {/* <View style={styles.container}>
-                  <Picker
-                    style={{ height: 50, width: 150 }}
-                    selectedValue={Category}
-                    style={{ height: 50, width: 150 }}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({ Category: itemValue })
-                    }
-                  >
-                    <Picker.Item label="select category" value="" />
-                    <Picker.Item label="photographer" value="photographer" />
-                    <Picker.Item label="Musician" value="Musician" />
-                    <Picker.Item label="Developer" value="Developer" />
-                    <Picker.Item label="Electrition" value="Electrition" />
-                  </Picker>
-                  <WhiteSpace />
-                  <Picker
-                    style={{ height: 50, width: 150 }}
-                    selectedValue={Experience}
-                    style={{ height: 50, width: 150 }}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({ Experience: itemValue })
-                    }
-                  >
-                    <Picker.Item label="select your experience" value="" />
-                    <Picker.Item label="Beginner" value="Beginner" />
-                    <Picker.Item label="Intermediate" value="Intermediate" />
-                    <Picker.Item label="Proffessional" value="Proffessional" />
-                  </Picker>
-                </View> */}
-                <WhiteSpace />
-
+              <View>
+                <WhiteSpace size="lg" />
+                <TextInput
+                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                  placeholder="First and last name"
+                  onChangeText={(resName) => this.setState({ resName })}
+                  value={this.state.resName}
+                />
+                <WhiteSpace size="lg" />
+                <Picker
+                  style={styles.textAreaContainer}
+                  selectedValue={resCat}
+                  onValueChange={(itemValue) =>
+                    this.setState({ resCat: itemValue })
+                  }
+                >
+                  <Picker.Item label="select category" value="" />
+                  <Picker.Item label="photographer" value="photographer" />
+                  <Picker.Item label="Musician" value="Musician" />
+                  <Picker.Item label="Developer" value="Developer" />
+                  <Picker.Item label="Electrition" value="Electrition" />
+                </Picker>
+                <Picker
+                  style={styles.textAreaContainer}
+                  selectedValue={resExp}
+                  onValueChange={(itemValue) =>
+                    this.setState({ resExp: itemValue })
+                  }
+                >
+                  <Picker.Item label="select your experience" value="" />
+                  <Picker.Item label="Beginner" value="Beginner" />
+                  <Picker.Item label="Intermediate" value="Intermediate" />
+                  <Picker.Item label="Proffessional" value="Proffessional" />
+                </Picker>
+                {/* <WhiteSpace size="lg" />
                 <TextInput
                   // style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
                   placeholder="Location"
-                  onChangeText={(location) => this.setState({ location })}
-                  value={(value) => (this.state, value)}
-                />
-              </View>
-              <WhiteSpace />
-              <View style={styles.textAreaContainer}>
+                  onChangeText={(resLoc) => this.setState({ resLoc })}
+                  value={this.state.resLoc}
+                /> */}
+                <WhiteSpace size="lg" />
                 <TextInput
-                  style={styles.textArea}
-                  underlineColorAndroid="transparent"
-                  placeholder="About..."
-                  placeholderTextColor="grey"
-                  numberOfLines={10}
+                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                  placeholder="Location"
+                  onChangeText={(resLoc) => this.setState({ resLoc })}
+                  value={this.state.resLoc}
+                />
+                <WhiteSpace size="lg" />
+                <TextInput
+                  style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                  placeholder="Availablity time"
+                  onChangeText={(resAvailable) =>
+                    this.setState({ resAvailable })
+                  }
+                  value={this.state.resAvailable}
+                />
+                <WhiteSpace size="lg" />
+              </View>
+              <View style={styles.textAreaContainer}>
+                {/* textarea */}
+                <TextInput
+                  placeholder="About....."
                   multiline={true}
+                  numberOfLines={4}
+                  onChangeText={(resDes) => this.setState({ resDes })}
+                  value={this.state.resDes}
                 />
               </View>
-              <WhiteSpace />
+
+              <WhiteSpace size="lg" />
+
+              {/* <Text>{"\n\n\n\n\n\n\n\n\n\n\n\n"}</Text> */}
               <Button type="primary" onPress={this.onSubmit} disabled={loading}>
-                Submitt
+                Submit
               </Button>
-              <WhiteSpace />
+              <WhiteSpace size="lg" />
               <Button type="primary" onPress={this.onClose}>
                 Close
               </Button>
@@ -255,15 +306,15 @@ export default class ResourceScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    // paddingTop: 40,
+    paddingTop: 40,
     alignItems: "center",
-    backgroundColor: "#F5FCFF",
   },
   textAreaContainer: {
     borderColor: Colors.grey20,
     borderWidth: 1,
     padding: 5,
+    height: 70,
+    width: 250,
   },
   textArea: {
     height: 50,
